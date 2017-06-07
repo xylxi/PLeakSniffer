@@ -15,6 +15,7 @@
 #define kPLeakSnifferPingInterval       0.5f
 
 @interface PLeakSniffer ()
+//
 @property (nonatomic, strong) NSTimer*                 pingTimer;
 @property (nonatomic, assign) BOOL                     useAlert;
 @property (nonatomic, strong) NSMutableArray*          ignoreList;
@@ -40,7 +41,7 @@
     self = [super init];
     if (self) {
         self.ignoreList = @[].mutableCopy;
-        
+        // 添加监听内存泄漏的广播
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(detectPong:) name:Notif_PLeakSniffer_Pong object:nil];
     }
     return self;
@@ -91,9 +92,12 @@
 
 - (void)detectPong:(NSNotification*)notif
 {
+    // 泄漏对象
     NSObject* leakedObject = notif.object;
+    // 对象类
     NSString* leakedName = NSStringFromClass([leakedObject class]);
     @synchronized (self) {
+        // 如果是白名单的，就不提示泄漏
         if ([_ignoreList containsObject:leakedName]) {
             return;
         }

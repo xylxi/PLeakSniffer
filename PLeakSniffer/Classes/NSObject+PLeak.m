@@ -55,6 +55,7 @@
 
 }
 
+// 激活，主要是为了给对象添加proxy监控对象
 - (BOOL)markAlive
 {
     if ([self pProxy] != nil) {
@@ -99,12 +100,12 @@
         }
     }
     
-    
     PObjectProxy* proxy = [PObjectProxy new];
+    // 为self添加proxy监控对象
     [self setPProxy:proxy];
+    // proxy开始监控self
     [proxy prepareProxy:self];
-    
-    
+    // 激活
     return true;
 }
 

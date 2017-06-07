@@ -11,6 +11,7 @@
 
 @interface NSObject (PLeakTrack) <PObjectProxyKVODelegate>
 
+// 每个对象观察属性的层级(5级)
 - (void)watchAllRetainedProperties:(int)level;
 
 @end

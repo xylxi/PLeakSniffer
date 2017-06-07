@@ -14,7 +14,13 @@
 static void * PObjectProxyContext = &PObjectProxyContext;
 
 @interface PObjectProxy ()
+/**
+ *  记录着检测到泄漏的次数，因为有的对象释放的不是那么及时
+ */
 @property (nonatomic, assign) int                 leakCheckFailCount;
+/**
+ *  释放已经发出内存泄漏的通知，如果发出来，就不同在发通知了
+ */
 @property (nonatomic, assign) BOOL                hasNotified;
 
 @property (nonatomic, weak) id                    observedObject; //the host actually
@@ -36,7 +42,8 @@ static void * PObjectProxyContext = &PObjectProxyContext;
 
 - (void)prepareProxy:(NSObject*)target {
     self.weakTarget = target;
-    
+    // 开始监听Notif_PLeakSniffer_Ping广播，收到广播手检测对象是否存活
+    // 如果不存活，就是泄漏了
     [[NSNotificationCenter defaultCenter] removeObserver:self name:Notif_PLeakSniffer_Ping object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(detectSnifferPing) name:Notif_PLeakSniffer_Ping object:nil];
     
@@ -52,9 +59,10 @@ static void * PObjectProxyContext = &PObjectProxyContext;
     if (_hasNotified) {
         return;
     }
-    
+    // 获取对象的存活状态
     BOOL alive = [self.weakTarget isAlive];
     if (alive == false) {
+        // false，计数加1
         _leakCheckFailCount ++;
     }
     

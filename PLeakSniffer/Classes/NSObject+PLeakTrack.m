@@ -25,10 +25,12 @@
     if ([className hasPrefix:@"UI"] || [className hasPrefix:@"NS"] || [className hasPrefix:@"_"]) {
         return;
     }
+    // 如果该类的所有属性(主要是自己定义的属性)
     NSArray* l1Properties = [self getAllPropertyNames:[self class]];
     [watchedProperties addObjectsFromArray:l1Properties];
     
     //track class level2
+    // 如果该类父类的所有属性(主要是自己定义的属性)
     NSString* superClassName = NSStringFromClass([self superclass]);
     if ([superClassName hasPrefix:@"UI"] == false &&
         [superClassName hasPrefix:@"NS"] == false &&
@@ -39,6 +41,7 @@
     }
     
     //track class level3
+    // 如果该类父类的父类的所有属性(主要是自己定义的属性)
     if ([[self superclass] superclass]) {
         NSString* superSuperClassName = NSStringFromClass([[self superclass] superclass]);
         if ([superSuperClassName hasPrefix:@"UI"] == false &&
@@ -223,6 +226,7 @@ SEL property_getSetter(objc_property_t property)
     return result;
 }
 
+// 判断属性是否是强应用类型
 bool isStrongProperty(objc_property_t property)
 {
     const char* attrs = property_getAttributes( property );
@@ -240,7 +244,7 @@ bool isStrongProperty(objc_property_t property)
     }
 }
 
-
+// 属性的类字符串
 const char* property_getTypeString( objc_property_t property )
 {
     const char * attrs = property_getAttributes( property );

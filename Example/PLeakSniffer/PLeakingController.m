@@ -10,7 +10,6 @@
 
 @interface PLeakingController ()
 @property (nonatomic, strong) NSTimer*                 timer;
-
 @end
 
 @implementation PLeakingController
